@@ -1,14 +1,14 @@
 import argparse
 import time
 from generator.producer import EventProducer
-from generator.synthetic import generate_event
+from generator.synthetic import generate_event, should_inject_fraud
 from generator.replay import replay_csv
 
 
 def run_synthetic(producer: EventProducer, rate_per_sec: float, fraud_ratio: float, count: int | None):
     sent = 0
     while count is None or sent < count:
-        inject = (sent % max(int(1 / fraud_ratio), 1) == 0) if fraud_ratio > 0 else False
+        inject = should_inject_fraud(sent, fraud_ratio)
         producer.send(generate_event(inject_fraud=inject))
         sent += 1
         time.sleep(1 / rate_per_sec)
