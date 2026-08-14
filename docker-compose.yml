@@ -54,9 +54,12 @@ services:
         condition: service_healthy
     restart: on-failure
 
-  # streamlit:
-  #   build: ./dashboards/streamlit
-  #   ports:
-  #     - "8501:8501"
-  #   depends_on:
-  #     - clickhouse
+  streamlit:
+    build:
+      context: .
+      dockerfile: dashboards/streamlit/Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
