@@ -43,11 +43,16 @@ services:
       timeout: 5s
       retries: 10
 
-  # consumer:
-  #   build: ./consumer
-  #   depends_on:
-  #     - redpanda
-  #     - clickhouse
+  consumer:
+    build:
+      context: .
+      dockerfile: consumer/Dockerfile
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    restart: on-failure
 
   # streamlit:
   #   build: ./dashboards/streamlit
