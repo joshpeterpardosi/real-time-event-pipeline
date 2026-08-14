@@ -36,6 +36,23 @@
           "format": 1
         }
       ]
+    },
+    {
+      "id": 3,
+      "title": "Ingestion Latency (avg, s)",
+      "type": "timeseries",
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "editorType": "sql",
+          "rawSql": "SELECT toStartOfMinute(ingested_at) AS time, avg(dateDiff('second', parseDateTimeBestEffort(event_timestamp), ingested_at)) AS value FROM transactions GROUP BY time ORDER BY time",
+          "format": 1
+        }
+      ]
     }
   ],
   "schemaVersion": 39,
