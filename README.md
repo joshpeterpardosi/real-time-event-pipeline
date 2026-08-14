@@ -1,5 +1,9 @@
 # Real-Time Event Pipeline — Fraud/Transaction Detection
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![Docker Compose](https://img.shields.io/badge/docker-compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 End-to-end real-time pipeline: stream ingestion, dual-mode fraud detection
 (rule-based + ML), analytical storage, and two dashboards. Full design:
 [docs/design/2026-08-14-real-time-event-pipeline-design.md](docs/design/2026-08-14-real-time-event-pipeline-design.md).
