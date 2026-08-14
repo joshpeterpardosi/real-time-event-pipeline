@@ -8,6 +8,13 @@ End-to-end real-time pipeline: stream ingestion, dual-mode fraud detection
 (rule-based + ML), analytical storage, and two dashboards. Full design:
 [docs/design/2026-08-14-real-time-event-pipeline-design.md](docs/design/2026-08-14-real-time-event-pipeline-design.md).
 
+Key architectural decisions and their trade-offs are written up as ADRs in
+[`docs/adr/`](docs/adr/):
+[stream processing](docs/adr/0001-stream-processing-kafka-python-vs-flink-vs-ksqldb.md) ·
+[storage](docs/adr/0002-storage-clickhouse-vs-postgres-vs-sqlite.md) ·
+[fraud detection](docs/adr/0003-fraud-detection-rule-based-vs-ml-vs-combo.md) ·
+[dashboards](docs/adr/0004-dashboards-grafana-plus-streamlit.md).
+
 ## Architecture
 
 ```
