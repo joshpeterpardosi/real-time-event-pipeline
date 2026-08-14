@@ -5,7 +5,7 @@ import clickhouse_connect
 from consumer.rules import RuleEngine
 from consumer.ml_scorer import MLScorer
 from consumer.clickhouse_client import ClickHouseWriter
-from consumer.consumer import process_message
+from consumer.loop import ConsumerLoop
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,27 +29,19 @@ def main():
     })
     consumer.subscribe(["transactions"])
 
-    batch, batch_messages = [], []
-    last_flush = time.monotonic()
+    loop = ConsumerLoop(
+        rule_engine=rule_engine,
+        ml_scorer=ml_scorer,
+        writer=writer,
+        dead_letter_producer=dead_letter_producer,
+        batch_size=BATCH_SIZE,
+        flush_interval_seconds=FLUSH_INTERVAL_SECONDS,
+    )
 
     while True:
         msg = consumer.poll(1.0)
-        now = time.monotonic()
-        if msg is not None and not msg.error():
-            row = process_message(msg.value().decode("utf-8"), rule_engine, ml_scorer, now)
-            if row is None:
-                dead_letter_producer.produce("dead_letter", value=msg.value())
-                dead_letter_producer.poll(0)
-                consumer.commit(message=msg)
-            else:
-                batch.append(row)
-                batch_messages.append(msg)
-
-        if batch and (len(batch) >= BATCH_SIZE or now - last_flush >= FLUSH_INTERVAL_SECONDS):
-            if writer.insert_batch(batch):
-                consumer.commit(message=batch_messages[-1])
-            batch, batch_messages = [], []
-            last_flush = now
+        usable_msg = msg if (msg is not None and not msg.error()) else None
+        loop.handle(usable_msg, time.monotonic(), consumer)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,6 @@ class ClickHouseWriter:
         self._table = table
         self._max_retries = max_retries
         self._backoff_seconds = backoff_seconds
-        self._buffer: list[dict] = []
 
     def insert_batch(self, rows: list[dict]) -> bool:
         for attempt in range(1, self._max_retries + 1):
@@ -25,10 +24,5 @@ class ClickHouseWriter:
                 logger.warning("ClickHouse insert attempt %d/%d failed: %s", attempt, self._max_retries, exc)
                 if attempt < self._max_retries:
                     time.sleep(self._backoff_seconds * attempt)
-        logger.error("ClickHouse insert failed after %d attempts, buffering %d rows", self._max_retries, len(rows))
-        self._buffer.extend(rows)
+        logger.error("ClickHouse insert failed after %d attempts", self._max_retries)
         return False
-
-    @property
-    def buffered_count(self) -> int:
-        return len(self._buffer)
