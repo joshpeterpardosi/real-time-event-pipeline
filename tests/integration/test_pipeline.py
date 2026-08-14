@@ -16,7 +16,7 @@ def test_known_fraud_pattern_is_flagged_in_clickhouse():
         timestamp="2026-08-14T00:00:00+00:00", source="synthetic",
     )
 
-    producer = EventProducer(bootstrap_servers="localhost:9092")
+    producer = EventProducer(bootstrap_servers="localhost:9093")
     producer.send(fraud_event)
     producer.flush()
 
