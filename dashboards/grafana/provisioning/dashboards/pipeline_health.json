@@ -7,11 +7,16 @@
       "id": 1,
       "title": "Throughput (txns/min)",
       "type": "timeseries",
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "editorType": "sql",
           "rawSql": "SELECT toStartOfMinute(ingested_at) AS time, count() AS value FROM transactions GROUP BY time ORDER BY time",
-          "format": "time_series"
+          "format": 1
         }
       ]
     },
@@ -19,11 +24,16 @@
       "id": 2,
       "title": "Fraud Flag Rate",
       "type": "timeseries",
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse" },
+          "queryType": "sql",
+          "editorType": "sql",
           "rawSql": "SELECT toStartOfMinute(ingested_at) AS time, avg(is_fraud) AS value FROM transactions GROUP BY time ORDER BY time",
-          "format": "time_series"
+          "format": 1
         }
       ]
     }
