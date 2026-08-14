@@ -9,4 +9,7 @@ datasources:
       port: 9000
       protocol: native
       defaultDatabase: default
+      username: default
+    secureJsonData:
+      password: localdev
     isDefault: true

@@ -7,7 +7,7 @@ st.set_page_config(page_title="Fraud Analyst View", layout="wide")
 
 @st.cache_resource
 def get_client():
-    return clickhouse_connect.get_client(host="clickhouse", port=8123)
+    return clickhouse_connect.get_client(host="clickhouse", port=8123, username="default", password="localdev")
 
 
 client = get_client()

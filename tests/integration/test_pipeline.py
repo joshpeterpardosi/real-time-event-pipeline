@@ -20,7 +20,7 @@ def test_known_fraud_pattern_is_flagged_in_clickhouse():
     producer.send(fraud_event)
     producer.flush()
 
-    ch_client = clickhouse_connect.get_client(host="localhost", port=8123)
+    ch_client = clickhouse_connect.get_client(host="localhost", port=8123, username="default", password="localdev")
     deadline = time.monotonic() + 30
     row = None
     while time.monotonic() < deadline:

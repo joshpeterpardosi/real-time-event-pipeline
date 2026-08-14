@@ -18,7 +18,7 @@ def main():
     ml_scorer = MLScorer(model_path="/app/ml/model.joblib")  # fails fast if missing
     rule_engine = RuleEngine()
     dead_letter_producer = Producer({"bootstrap.servers": "redpanda:9092"})
-    ch_client = clickhouse_connect.get_client(host="clickhouse", port=8123)
+    ch_client = clickhouse_connect.get_client(host="clickhouse", port=8123, username="default", password="localdev")
     writer = ClickHouseWriter(ch_client)
 
     consumer = Consumer({
