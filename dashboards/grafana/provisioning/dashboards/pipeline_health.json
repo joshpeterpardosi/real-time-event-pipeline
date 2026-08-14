@@ -1,0 +1,33 @@
+{
+  "title": "Pipeline Health",
+  "timezone": "browser",
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Throughput (txns/min)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "rawSql": "SELECT toStartOfMinute(ingested_at) AS time, count() AS value FROM transactions GROUP BY time ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Fraud Flag Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "rawSql": "SELECT toStartOfMinute(ingested_at) AS time, avg(is_fraud) AS value FROM transactions GROUP BY time ORDER BY time",
+          "format": "time_series"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}
