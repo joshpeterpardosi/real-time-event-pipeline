@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from confluent_kafka import Consumer, Producer
 import clickhouse_connect
@@ -13,16 +14,24 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 100
 FLUSH_INTERVAL_SECONDS = 5
 
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "redpanda:9092")
+CLICKHOUSE_HOST = os.environ.get("CLICKHOUSE_HOST", "clickhouse")
+CLICKHOUSE_PORT = int(os.environ.get("CLICKHOUSE_PORT", "8123"))
+CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "default")
+CLICKHOUSE_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD", "localdev")
+
 
 def main():
     ml_scorer = MLScorer(model_path="/app/ml/model.joblib")  # fails fast if missing
     rule_engine = RuleEngine()
-    dead_letter_producer = Producer({"bootstrap.servers": "redpanda:9092"})
-    ch_client = clickhouse_connect.get_client(host="clickhouse", port=8123, username="default", password="localdev")
+    dead_letter_producer = Producer({"bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS})
+    ch_client = clickhouse_connect.get_client(
+        host=CLICKHOUSE_HOST, port=CLICKHOUSE_PORT, username=CLICKHOUSE_USER, password=CLICKHOUSE_PASSWORD
+    )
     writer = ClickHouseWriter(ch_client)
 
     consumer = Consumer({
-        "bootstrap.servers": "redpanda:9092",
+        "bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
         "group.id": "fraud-consumer",
         "enable.auto.commit": False,
         "auto.offset.reset": "earliest",

@@ -1,13 +1,21 @@
+import os
 import streamlit as st
 import clickhouse_connect
 import plotly.express as px
 
 st.set_page_config(page_title="Fraud Analyst View", layout="wide")
 
+CLICKHOUSE_HOST = os.environ.get("CLICKHOUSE_HOST", "clickhouse")
+CLICKHOUSE_PORT = int(os.environ.get("CLICKHOUSE_PORT", "8123"))
+CLICKHOUSE_USER = os.environ.get("CLICKHOUSE_USER", "default")
+CLICKHOUSE_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD", "localdev")
+
 
 @st.cache_resource
 def get_client():
-    return clickhouse_connect.get_client(host="clickhouse", port=8123, username="default", password="localdev")
+    return clickhouse_connect.get_client(
+        host=CLICKHOUSE_HOST, port=CLICKHOUSE_PORT, username=CLICKHOUSE_USER, password=CLICKHOUSE_PASSWORD
+    )
 
 
 client = get_client()

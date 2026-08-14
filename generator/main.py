@@ -1,8 +1,11 @@
 import argparse
+import os
 import time
 from generator.producer import EventProducer
 from generator.synthetic import generate_event, should_inject_fraud
 from generator.replay import replay_csv
+
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "redpanda:9092")
 
 
 def run_synthetic(producer: EventProducer, rate_per_sec: float, fraud_ratio: float, count: int | None):
@@ -34,7 +37,7 @@ def main():
     replay.add_argument("--csv", required=True)
 
     args = parser.parse_args()
-    producer = EventProducer(bootstrap_servers="redpanda:9092")
+    producer = EventProducer(bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
 
     if args.mode == "synthetic":
         run_synthetic(producer, args.rate, args.fraud_ratio, args.count)
