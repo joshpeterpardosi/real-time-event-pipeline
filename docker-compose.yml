@@ -61,6 +61,16 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  generator:
+    build:
+      context: .
+      dockerfile: generator/Dockerfile
+    volumes:
+      - ./ml/data:/app/ml/data
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
   streamlit:
     build:
       context: .
