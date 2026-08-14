@@ -1,0 +1,5 @@
+confluent-kafka==2.5.3
+clickhouse-connect==0.8.5
+joblib==1.4.2
+xgboost==2.1.1
+scikit-learn==1.5.1
