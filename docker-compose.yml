@@ -1,0 +1,31 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:latest
+    ports:
+      - "9092:9092"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - clickhouse
+
+  # consumer:
+  #   build: ./consumer
+  #   depends_on:
+  #     - redpanda
+  #     - clickhouse
+
+  # streamlit:
+  #   build: ./dashboards/streamlit
+  #   ports:
+  #     - "8501:8501"
+  #   depends_on:
+  #     - clickhouse
