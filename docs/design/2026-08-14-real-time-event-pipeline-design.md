@@ -146,7 +146,7 @@ real-time-event-pipeline/
 │   └── streamlit/            (app.py, plotly charts)
 ├── tests/
 └── docs/
-    ├── superpowers/specs/    (this design doc)
+    ├── design/                (this design doc)
     └── adr/                  (individual decision records, as needed)
 ```
 
