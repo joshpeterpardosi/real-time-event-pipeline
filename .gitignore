@@ -5,6 +5,9 @@ __pycache__/
 venv/
 .env
 .claude/
+ml/data/
+ml/model.joblib
+.pytest_cache/
 
 # graphify output — local only, never pushed
 graphify-out/
