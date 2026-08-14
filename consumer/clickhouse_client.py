@@ -5,6 +5,11 @@ logger = logging.getLogger(__name__)
 
 
 class ClickHouseWriter:
+    COLUMN_NAMES = [
+        "transaction_id", "user_id", "amount", "currency", "merchant", "country",
+        "event_timestamp", "source", "is_fraud", "fraud_reason", "confidence_score",
+    ]
+
     def __init__(self, client, table: str = "transactions", max_retries: int = 3, backoff_seconds: float = 1.0):
         self._client = client
         self._table = table
@@ -16,8 +21,8 @@ class ClickHouseWriter:
             try:
                 self._client.insert(
                     self._table,
-                    [list(r.values()) for r in rows],
-                    column_names=list(rows[0].keys()),
+                    [[row[c] for c in self.COLUMN_NAMES] for row in rows],
+                    column_names=self.COLUMN_NAMES,
                 )
                 return True
             except Exception as exc:
