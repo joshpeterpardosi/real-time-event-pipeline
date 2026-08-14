@@ -5,6 +5,9 @@ logger = logging.getLogger(__name__)
 
 
 class ClickHouseWriter:
+    # Must match the transactions table schema in clickhouse/init.sql (minus ingested_at,
+    # which has a DB-side default). Checked by
+    # tests/consumer/test_clickhouse_client.py::test_column_names_match_clickhouse_init_sql_schema
     COLUMN_NAMES = [
         "transaction_id", "user_id", "amount", "currency", "merchant", "country",
         "event_timestamp", "source", "is_fraud", "fraud_reason", "confidence_score",

@@ -1,3 +1,5 @@
+-- Column order must match ClickHouseWriter.COLUMN_NAMES in consumer/clickhouse_client.py
+-- (checked by tests/consumer/test_clickhouse_client.py::test_column_names_match_clickhouse_init_sql_schema)
 CREATE TABLE IF NOT EXISTS transactions (
     transaction_id String,
     user_id String,

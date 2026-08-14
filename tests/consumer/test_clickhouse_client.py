@@ -1,5 +1,15 @@
+import re
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 from consumer.clickhouse_client import ClickHouseWriter
+
+INIT_SQL_PATH = Path(__file__).resolve().parents[2] / "clickhouse" / "init.sql"
+
+
+def _ddl_column_names() -> list[str]:
+    sql = INIT_SQL_PATH.read_text()
+    body = re.search(r"CREATE TABLE.*?\((.*)\)\s*ENGINE", sql, re.DOTALL).group(1)
+    return [line.strip().split()[0] for line in body.strip().splitlines()]
 
 
 def _row(transaction_id="t1", amount=1.0):
@@ -51,3 +61,8 @@ def test_insert_batch_maps_rows_by_column_name_regardless_of_dict_key_order():
         [row1[c] for c in ClickHouseWriter.COLUMN_NAMES],
         [row2[c] for c in ClickHouseWriter.COLUMN_NAMES],
     ]
+
+
+def test_column_names_match_clickhouse_init_sql_schema():
+    ddl_columns = _ddl_column_names()
+    assert ddl_columns == ClickHouseWriter.COLUMN_NAMES + ["ingested_at"]
