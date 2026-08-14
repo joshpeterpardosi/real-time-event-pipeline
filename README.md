@@ -52,4 +52,10 @@ Integration test (requires `docker compose up -d` first):
 
 ## Dashboards
 
-(screenshots go here once captured)
+**Grafana — pipeline health** (throughput, fraud flag rate)
+
+![Grafana Pipeline Health dashboard](docs/screenshots/grafana-pipeline-health.jpg)
+
+**Streamlit — fraud analyst view** (flagged transactions by merchant, amount over time, drilldown table)
+
+![Streamlit Fraud Analyst View](docs/screenshots/streamlit-fraud-analyst.jpg)
