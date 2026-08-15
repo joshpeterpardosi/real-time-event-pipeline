@@ -55,6 +55,14 @@ python -m venv .venv && .venv/Scripts/pip install -r consumer/requirements.txt -
 .venv/Scripts/python -m pytest
 ```
 
+Run pytest through the project's `.venv`, not a global interpreter. A global
+Python without `confluent-kafka` / `clickhouse-connect` installed does not fail
+with a clear `ModuleNotFoundError` here — `unittest.mock.patch` swallows the
+missing-dependency import error while resolving its target, so
+`mock.patch("generator.producer.Producer")` surfaces as
+`AttributeError: module 'generator' has no attribute 'producer'` instead. It
+reads like a broken test; it is the wrong interpreter.
+
 Integration test (requires `docker compose up -d` first):
 
 ```
