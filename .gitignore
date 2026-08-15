@@ -14,3 +14,11 @@ graphify-out/
 
 # working plan — local only, never pushed
 docs/plans/
+
+# Agent tooling — local only, never pushed
+.agents/
+.scratch/
+.hallmark/
+
+# Personal interview prep — local only, never pushed
+interview/
