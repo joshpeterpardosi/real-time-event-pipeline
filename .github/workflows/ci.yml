@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      # The services each pin their own dependencies; the test suite imports
+      # across all three, so CI installs the union rather than a fourth list
+      # that would drift from them.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r consumer/requirements.txt \
+                      -r generator/requirements.txt \
+                      -r ml/requirements.txt
+          pip install pytest pyflakes
+
+      - name: Lint (pyflakes)
+        run: python -m pyflakes consumer generator ml shared tests
+
+      # pytest.ini excludes the integration marker by default, so this runs the
+      # unit suite only. The end-to-end test needs a live docker compose stack
+      # and is covered by the build job below plus a manual run.
+      - name: Test (pytest)
+        run: python -m pytest -v
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # consumer/Dockerfile copies ml/model.joblib, which is gitignored — the
+      # trained model is a runtime artifact, not source. A placeholder lets the
+      # image assemble so the Dockerfile itself is checked. The image is never
+      # run here, so the file's contents do not matter; what is being tested is
+      # that the build stages, paths and dependency install still work.
+      - name: Stand in for the gitignored model artifact
+        run: |
+          mkdir -p ml
+          printf 'placeholder for CI build only\n' > ml/model.joblib
+
+      # Build-only smoke test: the three service images must still assemble.
+      # Nothing is pushed to a registry.
+      - name: Build service images
+        run: |
+          docker build -f consumer/Dockerfile -t rtep-consumer .
+          docker build -f generator/Dockerfile -t rtep-generator .
+          docker build -f dashboards/streamlit/Dockerfile -t rtep-dashboard .
+
+      - name: Validate compose file
+        run: docker compose config --quiet
