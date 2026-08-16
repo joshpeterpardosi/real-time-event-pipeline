@@ -121,8 +121,17 @@ design, rather than one design being incompletely applied everywhere.
 - `ml/validate.py` enforces a precision/recall bar (`MIN_PRECISION = 0.80`,
   `MIN_RECALL = 0.70`) before a trained model is considered usable;
   `ml/train.py` asserts this at the end of training. The trained model in
-  this repo cleared the bar at precision 0.846 / recall 0.786 against the
+  this repo clears the bar at precision 0.856 / recall 0.786 against the
   Kaggle held-out test split.
+- That bar is measured at `ML_FRAUD_THRESHOLD`, the same constant the consumer
+  flags on, defined once in `shared/thresholds.py` and imported by both.
+  `validate` originally called `model.predict`, which applies the implicit 0.5,
+  while `combine` flagged at 0.7 — so the gate was certifying an operating point
+  the pipeline never ran. On the current model the gap was one false positive
+  (precision 0.846 at 0.5 against 0.856 at 0.7), harmless here only because this
+  model separates cleanly. A less separable model could clear the bar at 0.5 and
+  fail it at 0.7 with nothing to catch it, so the two now share one definition
+  and a test asserts they agree.
 - Anyone extending the synthetic generator to emit fields that map onto a
   retrained model's feature space could lift this restriction — it's a
   data-availability constraint, not a permanent architectural one.

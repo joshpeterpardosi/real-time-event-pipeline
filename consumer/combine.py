@@ -1,7 +1,12 @@
 from consumer import reasons as reason_constants
+from shared.thresholds import ML_FRAUD_THRESHOLD
 
 
-def combine(rule_reasons: list[str], ml_score: float | None, ml_threshold: float = 0.7) -> tuple[bool, str, float]:
+def combine(
+    rule_reasons: list[str],
+    ml_score: float | None,
+    ml_threshold: float = ML_FRAUD_THRESHOLD,
+) -> tuple[bool, str, float]:
     triggered = list(rule_reasons)
     ml_triggered = ml_score is not None and ml_score >= ml_threshold
     if ml_triggered:
