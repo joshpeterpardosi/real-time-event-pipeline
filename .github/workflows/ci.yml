@@ -9,18 +9,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      # 3.11 only, matching the python:3.11-slim base every service image uses.
+      # A wider matrix would test a runtime this project never ships on — and
+      # the pinned pandas 2.2.2 / scikit-learn 1.5.1 have no 3.13 wheels, so pip
+      # falls back to building them from source and the Cython-generated C++
+      # fails to compile. Widening the matrix is a dependency decision first,
+      # not a CI one.
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: pip
 
       # The services each pin their own dependencies; the test suite imports
