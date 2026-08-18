@@ -15,6 +15,28 @@ Key architectural decisions and their trade-offs are written up as ADRs in
 [fraud detection](docs/adr/0003-fraud-detection-rule-based-vs-ml-vs-combo.md) ·
 [dashboards](docs/adr/0004-dashboards-grafana-plus-streamlit.md).
 
+## Headline result
+
+| Metric | Value |
+|---|---|
+| Fraud model | XGBoost, **precision 0.856 / recall 0.786** on the Kaggle held-out split |
+| Release gate | `MIN_PRECISION` 0.80, `MIN_RECALL` 0.70 — training asserts the bar before a model is usable |
+| Detection | Dual-mode: rules on the synthetic stream, ML on the dataset replay |
+| Storage | ClickHouse, batched inserts, sustaining a demo burst of hundreds of events/sec |
+| Dashboards | Grafana pipeline health · Streamlit fraud-analyst view |
+| Tests | 49 tests |
+
+The two modes are not redundancy — the synthetic generator emits
+`amount`/`merchant`/`country`, while the Kaggle signal lives entirely in 28
+anonymized PCA features specific to that dataset's originating bank. The
+feature spaces do not overlap, so one strategy cannot score both sources.
+
+The gate is measured at `ML_FRAUD_THRESHOLD`, the same constant the consumer
+flags on. It previously used `model.predict`'s implicit 0.5 while the consumer
+flagged at 0.7, so the gate certified an operating point the pipeline never
+ran. Both now import one definition and a test asserts they agree. Four ADRs
+in [`docs/adr/`](docs/adr/) record the stack decisions and their trade-offs.
+
 ## Architecture
 
 ```
